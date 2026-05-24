@@ -1,0 +1,11 @@
+{
+  "port": 9876,
+  "host": "0.0.0.0",
+  "storagePath": "D:\\Clave1001\\Evidencias",
+  "apiKey": "CAMBIAR-clave-larga-aleatoria-min-32-chars",
+  "organizacionId": "uuid-de-la-franquicia-en-supabase",
+  "organizacionNombre": "Mi Franquicia",
+  "supabaseUrl": "https://TU_PROYECTO.supabase.co",
+  "supabaseServiceKey": "TU_SERVICE_ROLE_KEY_SOLO_EN_ESTE_PC",
+  "corsOrigins": ["http://localhost:3000", "https://tu-app.vercel.app"]
+}
