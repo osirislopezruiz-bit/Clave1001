@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import OrgModal from './components/OrgModal';
-import StaffModal from './components/StaffModal';
-import CredentialsModal from './components/CredentialsModal';
+// Deleted broken imports
 import './styles/adminPanel.css';
 import { Shield, AlertTriangle, MapPin, Clock, CheckCircle, Phone, Navigation, LogOut, Users, Activity, Radio, Database, Lock, Plus, Monitor, Camera, BellRing, Mic, Eye, Zap, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -130,7 +128,7 @@ export default function WarRoom({ userProfile }) {
   const removeVehicle = (id) => setVehicles(prev => prev.filter(v => v.id !== id));
 
   const iotFieldStyle = { width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', padding: '10px 14px', borderRadius: '10px', color: '#fff', fontSize: '12px', outline: 'none', boxSizing: 'border-box' };
-  const iotLabelStyle = { fontSize: '9px', color: 'var(--gold)', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase', display: 'block', marginBottom: '5px' };
+  const iotLabelStyle = { fontSize: '9px', color: '#2c3e50', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase', display: 'block', marginBottom: '5px' };
   const [evidences, setEvidences] = useState(() => {
     try {
       const saved = localStorage.getItem('clave1001_evidences');
@@ -380,17 +378,11 @@ export default function WarRoom({ userProfile }) {
       return;
     }
 
-    // Si la alerta está resuelta (desactivada), generamos una ruta histórica espectacular y de simulación táctica
+    // Si la alerta está resuelta (desactivada), mostramos la última ubicación real registrada
     if (selectedAlert.estado === 'resuelta') {
       const startLat = selectedAlert.latitud;
       const startLng = selectedAlert.longitud;
-      const path = [
-        [startLat, startLng],
-        [startLat + 0.0012, startLng - 0.0018],
-        [startLat + 0.0028, startLng - 0.0008],
-        [startLat + 0.0039, startLng + 0.0012]
-      ];
-      setLocationHistory(path);
+      setLocationHistory([[startLat, startLng]]);
       return;
     }
 
@@ -994,7 +986,7 @@ export default function WarRoom({ userProfile }) {
                     style={{
                       background: 'rgba(255,255,255,0.04)',
                       border: '1px solid rgba(255,255,255,0.08)',
-                      color: 'var(--gold)',
+                      color: '#2c3e50',
                       padding: '8px 16px',
                       borderRadius: '8px',
                       fontSize: '10px',
@@ -1188,7 +1180,7 @@ export default function WarRoom({ userProfile }) {
                                bottom: '25px',
                                right: '25px',
                                zIndex: 400,
-                               background: 'var(--gold)',
+                               background: '#2c3e50',
                                color: 'black',
                                border: 'none',
                                padding: '12px 20px',
@@ -1248,7 +1240,7 @@ export default function WarRoom({ userProfile }) {
                                    onClick={() => setIsMaximizedVideo(!isMaximizedVideo)}
                                    style={{
                                      padding: '8px 15px',
-                                     background: 'var(--gold)',
+                                     background: '#2c3e50',
                                      color: 'black',
                                      border: 'none',
                                      borderRadius: '10px',
@@ -1294,11 +1286,11 @@ export default function WarRoom({ userProfile }) {
                           <div className="intel-details-grid" style={{ margin: '20px 0', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '15px', display: 'flex', flexDirection: 'column', gap: '12px', flex: '1', overflowY: 'auto' }}>
 
                              <div>
-                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--gold)', letterSpacing: '1px', fontWeight: '900', marginBottom: '6px' }}>Bitácora del Incidente</div>
+                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#2c3e50', letterSpacing: '1px', fontWeight: '900', marginBottom: '6px' }}>Bitácora del Incidente</div>
                                <div style={{ fontSize: '10px', color: '#94a3b8', background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '90px', overflowY: 'auto' }}>
                                  {incidentLogs.map((log, idx) => (
                                    <div key={idx} style={{ display: 'flex', gap: '8px' }}>
-                                     <span style={{ color: 'var(--gold)', fontFamily: 'monospace' }}>[{log.time}]</span>
+                                     <span style={{ color: '#2c3e50', fontFamily: 'monospace' }}>[{log.time}]</span>
                                      <span style={{ color: '#e2e8f0' }}>{log.text}</span>
                                    </div>
                                  ))}
@@ -1309,20 +1301,20 @@ export default function WarRoom({ userProfile }) {
                              
 
                              <div>
-                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--gold)', letterSpacing: '1px', fontWeight: '900' }}>Organización</div>
+                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#2c3e50', letterSpacing: '1px', fontWeight: '900' }}>Organización</div>
                                <div style={{ fontSize: '13px', color: '#f1f5f9', marginTop: '3px' }}>{selectedAlert.usuario?.organizacion?.nombre || 'Clave 1001 Enterprise'}</div>
                              </div>
                              <div>
-                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--gold)', letterSpacing: '1px', fontWeight: '900' }}>Palabra Clave</div>
+                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#2c3e50', letterSpacing: '1px', fontWeight: '900' }}>Palabra Clave</div>
                                <div style={{ fontSize: '13px', color: '#ef4444', fontWeight: '900', marginTop: '3px', letterSpacing: '1px' }}>{selectedAlert.usuario?.palabra_clave || 'NO CONFIGURADA'}</div>
                              </div>
                              <div>
-                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--gold)', letterSpacing: '1px', fontWeight: '900' }}>Código de Seguridad</div>
+                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#2c3e50', letterSpacing: '1px', fontWeight: '900' }}>Código de Seguridad</div>
                                <div style={{ fontSize: '13px', color: '#10b981', fontWeight: '900', marginTop: '3px', letterSpacing: '1px' }}>{selectedAlert.usuario?.clave_seguridad || 'NO CONFIGURADO'}</div>
                              </div>
                              
                              <div>
-                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--gold)', letterSpacing: '1px', fontWeight: '900' }}>Dirección IP de Víctima</div>
+                               <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#2c3e50', letterSpacing: '1px', fontWeight: '900' }}>Dirección IP de Víctima</div>
                                <div style={{ fontSize: '13px', color: '#10b981', fontWeight: '900', marginTop: '3px', letterSpacing: '1px', fontFamily: 'monospace' }}>{selectedAlert.ip_victima || 'NO REGISTRADA'}</div>
                              </div>
                              <div>
@@ -1356,7 +1348,7 @@ export default function WarRoom({ userProfile }) {
                                 </div>
                               )}
 
-                             <button className="btn-intel primary" onClick={() => setShowDispatchModal(true)} style={{ width: '100%', background: dispatchedUnits[selectedAlert.id] ? 'rgba(255,255,255,0.04)' : 'var(--gold)', border: dispatchedUnits[selectedAlert.id] ? '1px solid rgba(255,255,255,0.1)' : 'none', color: dispatchedUnits[selectedAlert.id] ? '#fff' : 'black' }}>
+                             <button className="btn-intel primary" onClick={() => setShowDispatchModal(true)} style={{ width: '100%', background: dispatchedUnits[selectedAlert.id] ? 'rgba(255,255,255,0.04)' : '#2c3e50', border: dispatchedUnits[selectedAlert.id] ? '1px solid rgba(255,255,255,0.1)' : 'none', color: dispatchedUnits[selectedAlert.id] ? '#fff' : '#fff' }}>
                                <Navigation size={12} /> {dispatchedUnits[selectedAlert.id] ? 'REASIGNAR OTRA UNIDAD' : 'DESPACHAR PATRULLA'}
                              </button>
                              <div style={{ display: 'flex', gap: '8px' }}>
@@ -1400,7 +1392,7 @@ export default function WarRoom({ userProfile }) {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
                       <button
                         onClick={() => { setSelectedOrg(org); setNewOrg({ nombre: org.nombre, color: org.color_primario || '#0a0f1e', logo: org.logo_url || '', tipo_letra: org.tipo_letra || 'Inter', color_secundario: org.color_secundario || '#ffffff', color_acento: org.color_acento || '#ef4444', slogan: org.slogan || '', domicilio: org.domicilio || '', redes_sociales: org.redes_sociales ? JSON.stringify(org.redes_sociales) : '{}', storage_mode: org.storage_mode || 'manual_download', bridge_url: org.bridge_url || '', bridge_api_key: org.bridge_api_key || '' }); setShowOrgModal(true); }}
-                        style={{ padding: '9px 4px', fontSize: 10, fontWeight: 900, letterSpacing: '0.5px', background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.3)', color: 'var(--gold)', borderRadius: 10, cursor: 'pointer' }}
+                        style={{ padding: '9px 4px', fontSize: 10, fontWeight: 900, letterSpacing: '0.5px', background: 'rgba(44,62,80,0.12)', border: '1px solid rgba(44,62,80,0.3)', color: '#2c3e50', borderRadius: 10, cursor: 'pointer' }}
                       >✏️ EDITAR</button>
                       <button
                         onClick={() => { setPreviewOrg(org); setShowPreviewModal(true); }}
@@ -1431,7 +1423,7 @@ export default function WarRoom({ userProfile }) {
               {/* ─── SECCIÓN CCTV ─── */}
               <section style={{ marginTop: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h3 style={{ color: 'var(--gold)', fontSize: '11px', letterSpacing: '2px', margin: 0 }}>
+                  <h3 style={{ color: '#2c3e50', fontSize: '11px', letterSpacing: '2px', margin: 0 }}>
                     <Video size={13} style={{ verticalAlign: 'middle', marginRight: 6 }} />
                     CÁMARAS REGISTRADAS ({cctvStreams.length})
                   </h3>
@@ -1450,7 +1442,7 @@ export default function WarRoom({ userProfile }) {
                   <div style={{ background: 'rgba(10,15,30,0.4)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
                     <table style={{ width: '100%', color: 'white', textAlign: 'left', borderCollapse: 'collapse' }}>
                       <thead>
-                        <tr style={{ color: 'var(--gold)', fontSize: '9px', letterSpacing: '2px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                        <tr style={{ color: '#2c3e50', fontSize: '9px', letterSpacing: '2px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                           <th style={{ padding: '14px 18px' }}>NOMBRE</th>
                           <th style={{ padding: '14px 18px' }}>UBICACIÓN</th>
                           <th style={{ padding: '14px 18px' }}>URL STREAM</th>
@@ -1483,7 +1475,7 @@ export default function WarRoom({ userProfile }) {
                     <div><label style={iotLabelStyle}>URL del Stream (RTSP / HLS)</label><input style={iotFieldStyle} placeholder="rtsp://192.168.1.X:554/..." value={newCam.url} onChange={e => setNewCam({...newCam, url: e.target.value})} /></div>
                     <div><label style={iotLabelStyle}>Ubicación Física</label><input style={iotFieldStyle} placeholder="Ej. Caseta Norte" value={newCam.ubicacion} onChange={e => setNewCam({...newCam, ubicacion: e.target.value})} /></div>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      <button onClick={addCam} style={{ background: 'var(--gold)', color: 'black', border: 'none', padding: '10px 16px', borderRadius: '10px', fontWeight: '900', fontSize: '10px', cursor: 'pointer', whiteSpace: 'nowrap' }}>GUARDAR</button>
+                      <button onClick={addCam} style={{ background: '#2c3e50', color: 'black', border: 'none', padding: '10px 16px', borderRadius: '10px', fontWeight: '900', fontSize: '10px', cursor: 'pointer', whiteSpace: 'nowrap' }}>GUARDAR</button>
                       <button onClick={() => setShowAddCam(false)} style={{ background: 'rgba(255,255,255,0.04)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.08)', padding: '10px 14px', borderRadius: '10px', fontWeight: '900', fontSize: '10px', cursor: 'pointer' }}>✕</button>
                     </div>
                   </div>
@@ -1493,7 +1485,7 @@ export default function WarRoom({ userProfile }) {
               {/* ─── SECCIÓN GPS FLOTILLA ─── */}
               <section style={{ marginTop: '40px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h3 style={{ color: 'var(--gold)', fontSize: '11px', letterSpacing: '2px', margin: 0 }}>
+                  <h3 style={{ color: '#2c3e50', fontSize: '11px', letterSpacing: '2px', margin: 0 }}>
                     <Navigation size={13} style={{ verticalAlign: 'middle', marginRight: 6 }} />
                     FLOTILLA VEHICULAR ({vehicles.length})
                   </h3>
@@ -1512,7 +1504,7 @@ export default function WarRoom({ userProfile }) {
                   <div style={{ background: 'rgba(10,15,30,0.4)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
                     <table style={{ width: '100%', color: 'white', textAlign: 'left', borderCollapse: 'collapse' }}>
                       <thead>
-                        <tr style={{ color: 'var(--gold)', fontSize: '9px', letterSpacing: '2px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                        <tr style={{ color: '#2c3e50', fontSize: '9px', letterSpacing: '2px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                           <th style={{ padding: '14px 18px' }}>UNIDAD</th>
                           <th style={{ padding: '14px 18px' }}>PLACA</th>
                           <th style={{ padding: '14px 18px' }}>OPERADOR</th>
@@ -1545,7 +1537,7 @@ export default function WarRoom({ userProfile }) {
                     <div><label style={iotLabelStyle}>Placas</label><input style={iotFieldStyle} placeholder="Ej. ABC-1234" value={newVehicle.placa} onChange={e => setNewVehicle({...newVehicle, placa: e.target.value})} /></div>
                     <div><label style={iotLabelStyle}>Operador Asignado</label><input style={iotFieldStyle} placeholder="Nombre del conductor" value={newVehicle.operador} onChange={e => setNewVehicle({...newVehicle, operador: e.target.value})} /></div>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      <button onClick={addVehicle} style={{ background: 'var(--gold)', color: 'black', border: 'none', padding: '10px 16px', borderRadius: '10px', fontWeight: '900', fontSize: '10px', cursor: 'pointer', whiteSpace: 'nowrap' }}>GUARDAR</button>
+                      <button onClick={addVehicle} style={{ background: '#2c3e50', color: 'black', border: 'none', padding: '10px 16px', borderRadius: '10px', fontWeight: '900', fontSize: '10px', cursor: 'pointer', whiteSpace: 'nowrap' }}>GUARDAR</button>
                       <button onClick={() => setShowAddVehicle(false)} style={{ background: 'rgba(255,255,255,0.04)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.08)', padding: '10px 14px', borderRadius: '10px', fontWeight: '900', fontSize: '10px', cursor: 'pointer' }}>✕</button>
                     </div>
                   </div>
@@ -1565,7 +1557,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
               <div style={{ background: 'rgba(10,15,30,0.4)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', padding: '25px', overflowY: 'auto' }}>
                 <table style={{ width: '100%', color: 'white', textAlign: 'left', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ color: 'var(--gold)', fontSize: '10px', letterSpacing: '2px' }}>
+                    <tr style={{ color: '#2c3e50', fontSize: '10px', letterSpacing: '2px' }}>
                       <th style={{ padding: '15px' }}>NOMBRE</th>
                       <th style={{ padding: '15px' }}>ROL</th>
                       <th style={{ padding: '15px' }}>CONTACTO</th>
@@ -1577,7 +1569,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
                       <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', fontWeight: '500' }}>
                         <td style={{ padding: '15px' }}>{u.nombre_completo}</td>
                         <td style={{ padding: '15px' }}>
-                           <span style={{ fontSize: '9px', background: 'rgba(197, 160, 89, 0.1)', border: '1px solid rgba(197, 160, 89, 0.3)', padding: '3px 8px', borderRadius: '6px', color: 'var(--gold)', fontWeight: '900', textTransform: 'uppercase' }}>
+                           <span style={{ fontSize: '9px', background: 'rgba(44, 62, 80, 0.1)', border: '1px solid rgba(44, 62, 80, 0.3)', padding: '3px 8px', borderRadius: '6px', color: '#2c3e50', fontWeight: '900', textTransform: 'uppercase' }}>
                              {u.rol.replace('franquicia_', '')}
                            </span>
                         </td>
@@ -1603,7 +1595,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                 <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '900', letterSpacing: '1px' }}>REGISTRO DE <span>EVIDENCIAS ENCRIPTADAS</span></h1>
                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <Lock size={14} color="var(--gold)" />
+                  <Lock size={14} color="#2c3e50" />
                   <span style={{ fontSize: '10px', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase', color: '#94a3b8' }}>ALMACENAMIENTO SEGURO AES-256</span>
                 </div>
               </div>
@@ -1617,7 +1609,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
                       onClick={() => setSelectedEvidence(ev)}
                       style={{ 
                         background: selectedEvidence?.id === ev.id ? 'rgba(197, 160, 89, 0.08)' : 'rgba(255,255,255,0.02)', 
-                        border: selectedEvidence?.id === ev.id ? '1px solid var(--gold)' : '1px solid rgba(255,255,255,0.04)',
+                        border: selectedEvidence?.id === ev.id ? '1px solid #2c3e50' : '1px solid rgba(255,255,255,0.04)',
                         borderRadius: '16px',
                         padding: '20px',
                         cursor: 'pointer',
@@ -1630,14 +1622,14 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <span style={{ fontSize: '14px', fontWeight: '900', color: '#fff' }}>{ev.victimName}</span>
-                          <span style={{ fontSize: '9px', background: 'rgba(255,255,255,0.06)', padding: '3px 8px', borderRadius: '6px', color: 'var(--gold)', fontWeight: '900' }}>{ev.orgName}</span>
+                          <span style={{ fontSize: '9px', background: 'rgba(255,255,255,0.06)', padding: '3px 8px', borderRadius: '6px', color: '#2c3e50', fontWeight: '900' }}>{ev.orgName}</span>
                         </div>
                         <div style={{ display: 'flex', gap: '15px', color: '#64748b', fontSize: '11px', marginTop: '6px', fontWeight: '500' }}>
                           <span>⏱️ DURACIÓN: <strong>{ev.duration}</strong></span>
                           <span>📅 FECHA: <strong>{new Date(ev.date).toLocaleString()}</strong></span>
                         </div>
                       </div>
-                      <button style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--gold)', padding: '10px 18px', borderRadius: '10px', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}>
+                      <button style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#2c3e50', padding: '10px 18px', borderRadius: '10px', fontSize: '11px', fontWeight: '900', cursor: 'pointer' }}>
                         REPRODUCIR
                       </button>
                     </div>
@@ -1653,14 +1645,14 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
                 <div style={{ background: 'rgba(10,15,30,0.6)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)', padding: '25px', display: 'flex', flexDirection: 'column', gap: '20px', backdropFilter: 'blur(20px)' }}>
                   {selectedEvidence ? (
                     <>
-                      <h3 style={{ margin: 0, fontSize: '14px', letterSpacing: '2px', color: 'var(--gold)', fontWeight: '900', textTransform: 'uppercase' }}>INSPECTOR DE EVIDENCIA</h3>
+                      <h3 style={{ margin: 0, fontSize: '14px', letterSpacing: '2px', color: '#2c3e50', fontWeight: '900', textTransform: 'uppercase' }}>INSPECTOR DE EVIDENCIA</h3>
                       <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', background: '#000', flexShrink: 0 }}>
                         {selectedEvidence.url ? (
                           <video src={selectedEvidence.url} controls style={{ width: '100%', maxHeight: '200px', display: 'block' }} />
                         ) : (
                           <div style={{ padding: '25px 20px', background: 'rgba(255,255,255,0.02)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                            <Lock size={32} color="var(--gold)" style={{ opacity: 0.8 }} />
-                            <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--gold)', letterSpacing: '1px' }}>ARCHIVO ENCRIPTADO EN FRÍO</div>
+                            <Lock size={32} color="#2c3e50" style={{ opacity: 0.8 }} />
+                            <div style={{ fontSize: '10px', fontWeight: '900', color: '#2c3e50', letterSpacing: '1px' }}>ARCHIVO ENCRIPTADO EN FRÍO</div>
                             <p style={{ margin: 0, fontSize: '10px', color: '#64748b', lineHeight: '1.4' }}>
                               El archivo original está resguardado en el clúster de almacenamiento central bajo custodia criptográfica activa.
                             </p>
@@ -1746,7 +1738,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
             <div className="form-group" style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: 10 }}>
               <input placeholder="Nombre de Franquicia" value={newOrg.nombre} onChange={e => setNewOrg({...newOrg, nombre: e.target.value})} />
               <input placeholder="Slogan (Opcional)" value={newOrg.slogan} onChange={e => setNewOrg({...newOrg, slogan: e.target.value})} />
-              <label style={{ fontSize: 10, color: 'var(--gold)', fontWeight: 900, marginTop: 15, display: 'block' }}>PERSONALIZACIÓN VISUAL (ETIQUETA BLANCA)</label>
+              <label style={{ fontSize: 10, color: '#2c3e50', fontWeight: 900, marginTop: 15, display: 'block' }}>PERSONALIZACIÓN VISUAL (ETIQUETA BLANCA)</label>
               
               <div className="color-row" style={{ marginTop: 10 }}>
                 <label>COLOR DE FONDO</label>
@@ -1775,10 +1767,10 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
               <div style={{ marginTop: 15, background: 'rgba(0,0,0,0.3)', padding: 15, borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)' }}>
                 <label style={{ fontSize: 10, color: '#94a3b8', fontWeight: 900, display: 'block', marginBottom: 10 }}>SUBIR LOGOTIPO (PNG / JPG)</label>
                 <input type="file" accept="image/png, image/jpeg" onChange={handleLogoUpload} style={{ fontSize: 12, width: '100%' }} />
-                {uploadingLogo && <div style={{ fontSize: 11, color: 'var(--gold)', marginTop: 8 }}>Subiendo imagen al servidor...</div>}
+                {uploadingLogo && <div style={{ fontSize: 11, color: '#2c3e50', marginTop: 8 }}>Subiendo imagen al servidor...</div>}
                 {newOrg.logo && (
                   <div style={{ marginTop: 10 }}>
-                    <img src={newOrg.logo} alt="Logo" style={{ maxHeight: 60, borderRadius: 8, border: '1px solid var(--gold)' }} />
+                    <img src={newOrg.logo} alt="Logo" style={{ maxHeight: 60, borderRadius: 8, border: '1px solid #2c3e50' }} />
                   </div>
                 )}
               </div>
@@ -1786,7 +1778,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
               <input placeholder="Domicilio Físico (Opcional)" value={newOrg.domicilio} onChange={e => setNewOrg({...newOrg, domicilio: e.target.value})} style={{ marginTop: 15 }} />
               <textarea placeholder='Redes Sociales (JSON) ej. {"fb":"url"}' value={newOrg.redes_sociales} onChange={e => setNewOrg({...newOrg, redes_sociales: e.target.value})} style={{ width: '100%', padding: 12, borderRadius: 10, background: 'rgba(0,0,0,0.3)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', marginTop: 10, minHeight: 60 }} />
 
-              <label style={{ fontSize: 10, color: 'var(--gold)', fontWeight: 900, marginTop: 25, display: 'block' }}>FASE 2 — BRIDGE LOCAL</label>
+              <label style={{ fontSize: 10, color: '#2c3e50', fontWeight: 900, marginTop: 25, display: 'block' }}>FASE 2 — BRIDGE LOCAL</label>
               <select
                 value={newOrg.storage_mode}
                 onChange={(e) => setNewOrg({ ...newOrg, storage_mode: e.target.value })}
@@ -1835,12 +1827,12 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
                 : 'Fase 1: el .webm está en Descargas de este PC o solo en el móvil. Configure Bridge (storage_mode local_bridge) para guardado automático en D:\\Clave1001\\Evidencias\\.'}
             </p>
             {recordedVideoUrl && (
-              <div style={{ marginBottom: 20, borderRadius: 12, overflow: 'hidden', border: '2px solid var(--gold)', background: '#000' }}>
+              <div style={{ marginBottom: 20, borderRadius: 12, overflow: 'hidden', border: '2px solid #2c3e50', background: '#000' }}>
                 <video src={recordedVideoUrl} controls autoPlay style={{ width: '100%', maxHeight: '180px', display: 'block' }} />
               </div>
             )}
             <div style={{ background: 'rgba(255,255,255,0.03)', padding: 15, borderRadius: 12, border: '1px solid var(--border)', textAlign: 'left', marginBottom: 25 }}>
-              <div style={{ fontSize: 10, color: 'var(--gold)', fontWeight: 900, letterSpacing: 1, marginBottom: 5 }}>FINGERPRINT DIGITAL (SHA-256)</div>
+              <div style={{ fontSize: 10, color: '#2c3e50', fontWeight: 900, letterSpacing: 1, marginBottom: 5 }}>FINGERPRINT DIGITAL (SHA-256)</div>
               <div style={{ fontFamily: 'monospace', fontSize: 11, wordBreak: 'break-all', color: '#22c55e' }}>{evidenceFingerprint}</div>
               <div style={{ fontSize: 8, color: '#64748b', marginTop: 10, textAlign: 'right' }}>ESTÁNDAR DE CUSTODIA ENCRIPTADO AES-256</div>
             </div>
@@ -1853,13 +1845,13 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
         <div className="modal-root">
           <div className="modal-box" style={{ width: 680, background: 'rgba(10,15,30,0.95)', border: '1px solid rgba(197,160,89,0.3)', backdropFilter: 'blur(30px)' }}>
             <h2 style={{ letterSpacing: 2, margin: '0 0 25px 0', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Activity size={24} color="var(--gold)" /> ANÁLISIS DE DENSIDAD E INCIDENCIA
+              <Activity size={24} color="#2c3e50" /> ANÁLISIS DE DENSIDAD E INCIDENCIA
             </h2>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
               {/* INCIDENCIAS POR PUNTOS GEOGRÁFICOS */}
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                <div style={{ fontSize: '10px', color: 'var(--gold)', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '15px' }}>Puntos Geográficos Críticos</div>
+                <div style={{ fontSize: '10px', color: '#2c3e50', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '15px' }}>Puntos Geográficos Críticos</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
                     <span style={{ color: '#94a3b8' }}>📍 Sector Centro Urbano</span>
@@ -1882,7 +1874,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
 
               {/* INCIDENCIAS POR FRANQUICIA */}
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                <div style={{ fontSize: '10px', color: 'var(--gold)', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '15px' }}>Densidad por Franquicia</div>
+                <div style={{ fontSize: '10px', color: '#2c3e50', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '15px' }}>Densidad por Franquicia</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {orgs.map((org, index) => {
                     const simulatedValues = ['9.4 (ZONA ROJA)', '3.2 (ESTABLE)', '1.1 (SEGURO)'];
@@ -1909,7 +1901,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
                     style={{ 
                       flex: 1, 
                       height: `${h}%`, 
-                      background: h > 80 ? 'linear-gradient(to top, #ef4444, #f87171)' : h > 50 ? 'linear-gradient(to top, var(--gold), #fbbf24)' : 'linear-gradient(to top, #3b82f6, #60a5fa)',
+                      background: h > 80 ? 'linear-gradient(to top, #2c3e50, #566573)' : h > 50 ? 'linear-gradient(to top, #2c3e50, #95a5a6)' : 'linear-gradient(to top, #3b82f6, #60a5fa)',
                       borderRadius: '3px 3px 0 0',
                       animation: 'pulse-slow 2s infinite',
                       animationDelay: `${i * 0.1}s`
@@ -1933,7 +1925,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
         <div className="modal-root">
           <div className="modal-box" style={{ width: 550, background: 'rgba(10,15,30,0.96)', border: '1px solid var(--gold)', backdropFilter: 'blur(30px)' }}>
             <h2 style={{ letterSpacing: 2, margin: '0 0 15px 0', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Navigation size={24} color="var(--gold)" /> DESPACHO Y ASIGNACIÓN DE UNIDADES
+              <Navigation size={24} color="#2c3e50" /> DESPACHO Y ASIGNACIÓN DE UNIDADES
             </h2>
             <div style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '15px' }}>
               Asignando patrulla de auxilio inmediato para: <strong style={{ color: '#fff' }}>{selectedAlert.usuario?.nombre_completo}</strong> ({selectedAlert.usuario?.organizacion?.nombre || 'CLAVE 1001'}).
@@ -2012,7 +2004,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
         .tactical-nav { padding: 0 20px; flex: 1; }
         .tactical-nav button { width: 100%; padding: 16px 20px; margin-bottom: 10px; background: transparent; border: 1px solid transparent; color: #64748b; border-radius: 16px; display: flex; align-items: center; gap: 15px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.3s; position: relative; }
         .tactical-nav button.active { background: rgba(255,255,255,0.03); color: white; border-color: var(--border); }
-        .tactical-nav button.active::after { content: ''; position: absolute; left: 0; top: 15%; bottom: 15%; width: 4px; background: var(--gold); border-radius: 0 4px 4px 0; box-shadow: 0 0 15px var(--gold); }
+        .tactical-nav button.active::after { content: ''; position: absolute; left: 0; top: 15%; bottom: 15%; width: 4px; background: #2c3e50; border-radius: 0 4px 4px 0; box-shadow: 0 0 15px #2c3e50; }
         .active-badge { margin-left: auto; background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 6px; box-shadow: 0 0 10px #ef4444; }
 
         .sidebar-footer { padding: 0 30px; }
@@ -2024,7 +2016,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
         .tactical-main { flex: 1; position: relative; overflow: hidden; }
         .view-content { padding: 60px; max-width: 1400px; margin: 0 auto; }
         h1 { font-size: 42px; font-weight: 900; letter-spacing: -2px; margin-bottom: 40px; }
-        h1 span { color: var(--gold); }
+        h1 span { color: #2c3e50; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
         .stat-card { background: var(--panel); border: 1px solid var(--border); padding: 40px; border-radius: 30px; backdrop-filter: blur(20px); position: relative; overflow: hidden; }
@@ -2032,7 +2024,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
         .stat-card .val { font-size: 64px; font-weight: 900; margin: 15px 0; letter-spacing: -3px; }
         .progress-bar { height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 20px; }
         .progress-bar .fill { height: 100%; background: #ef4444; box-shadow: 0 0 10px #ef4444; border-radius: 2px; }
-        .stat-card.gold .val { color: var(--gold); }
+        .stat-card.gold .val { color: #2c3e50; }
         .stat-card.blue .val { color: var(--accent); }
 
         /* WAR ROOM IMMERSIVE */
@@ -2093,7 +2085,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
           background: rgba(10, 15, 30, 0.95);
           border-radius: 20px;
           z-index: 600;
-          border: 2px solid var(--gold);
+          border: 2px solid #2c3e50;
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
           overflow: hidden;
           pointer-events: auto;
@@ -2121,7 +2113,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
           pointer-events: auto;
         }
         .intel-header { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
-        .avatar-gold { width: 50px; height: 50px; background: var(--gold); color: black; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; box-shadow: 0 0 20px rgba(197, 160, 89, 0.4); }
+        .avatar-gold { width: 50px; height: 50px; background: #2c3e50; color: black; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; box-shadow: 0 0 20px rgba(44, 62, 80, 0.4); }
         .info h4 { margin: 0; font-size: 16px; }
         .info span { font-size: 12px; color: #64748b; font-weight: 700; }
 
@@ -2133,14 +2125,14 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
 
         /* ORGS */
         .orgs-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
-        .btn-premium-gold { background: linear-gradient(135deg, var(--gold), #85642c); color: black; border: none; padding: 15px 30px; border-radius: 16px; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 30px rgba(197, 160, 89, 0.3); }
+        .btn-premium-gold { background: linear-gradient(135deg, #2c3e50, #566573); color: black; border: none; padding: 15px 30px; border-radius: 16px; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 30px rgba(44, 62, 80, 0.3); }
         .orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
         .org-card-glass { background: var(--panel); border: 1px solid var(--border); border-radius: 25px; padding: 30px; display: flex; align-items: center; gap: 20px; transition: all 0.3s; }
-        .org-card-glass:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .org-card-glass:hover { transform: translateY(-5px); border-color: #2c3e50; }
         .org-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: black; }
         .org-actions { display: flex; gap: 10px; margin-top: 15px; }
         .org-actions button { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #94a3b8; padding: 8px 15px; border-radius: 10px; font-size: 10px; font-weight: 800; cursor: pointer; }
-        .org-actions button.edit { background: var(--gold); color: black; }
+        .org-actions button.edit { background: #2c3e50; color: black; }
 
         /* MODAL */
         .modal-root { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
@@ -2152,7 +2144,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
         .color-row input { width: 50px; padding: 0; height: 40px; }
         .modal-btns { display: flex; gap: 15px; }
         .modal-btns button { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: white; font-weight: 800; cursor: pointer; }
-        .modal-btns button.save { background: var(--gold); color: black; border: none; }
+        .modal-btns button.save { background: #2c3e50; color: black; border: none; }
 
         /* LOADER */
         .tactical-loader { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
@@ -2315,8 +2307,8 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
               <div>
                 <label style={{ fontSize: 9, color: '#64748b', fontWeight: 900, letterSpacing: 1, display: 'block', marginBottom: 5 }}>CONTRASEÑA GENÉRICA</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <code style={{ flex: 1, background: 'rgba(255,255,255,0.05)', padding: '10px 14px', borderRadius: 8, color: 'var(--gold)', fontSize: 13, fontWeight: 700 }}>{generatedCredentials.password}</code>
-                  <button onClick={() => { navigator.clipboard.writeText(generatedCredentials.password); }} style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(197,160,89,0.15)', border: '1px solid rgba(197,160,89,0.3)', color: 'var(--gold)', fontSize: 11, cursor: 'pointer', fontWeight: 900 }}>COPIAR</button>
+                  <code style={{ flex: 1, background: 'rgba(255,255,255,0.05)', padding: '10px 14px', borderRadius: 8, color: '#2c3e50', fontSize: 13, fontWeight: 700 }}>{generatedCredentials.password}</code>
+                  <button onClick={() => { navigator.clipboard.writeText(generatedCredentials.password); }} style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(44,62,80,0.15)', border: '1px solid rgba(44,62,80,0.3)', color: '#2c3e50', fontSize: 11, cursor: 'pointer', fontWeight: 900 }}>COPIAR</button>
                 </div>
               </div>
             </div>
@@ -2352,7 +2344,7 @@ setShowStaffModal(true); }}>+ NUEVO ELEMENTO</button>
             </div>
             {/* Footer */}
             <div style={{ padding: '12px 24px', borderTop: `1px solid rgba(255,255,255,0.05)`, textAlign: 'center' }}>
-              <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)', letterSpacing: 1 }}>Powered by Clave 1001 &amp; Arché Holding Labs</div>
+              <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)', letterSpacing: 1 }}>Powered by Clave 1001 &amp; Arché Holding Labs — <span style={{ color: '#2c3e50' }}>Hecho con IA</span></div>
             </div>
             <div style={{ padding: '0 24px 20px', textAlign: 'center' }}>
               <button onClick={() => setShowPreviewModal(false)} style={{ padding: '10px 30px', borderRadius: 10, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 900 }}>CERRAR PREVIEW</button>
