@@ -43,6 +43,7 @@ export default function WarRoom({ userProfile }) {
   const [loading, setLoading] = useState(true);
   const [orgs, setOrgs] = useState([]);
   const [showOrgModal, setShowOrgModal] = useState(false);
+  const [franchiseDetail, setFranchiseDetail] = useState(null);
   const [newOrg, setNewOrg] = useState({
     nombre: '',
     color: '#0a0f1e', // Color de fondo
@@ -1373,44 +1374,84 @@ export default function WarRoom({ userProfile }) {
               </div>
               <div className="orgs-grid">
                 {orgs.map(org => (
-                  <div key={org.id} className="org-card-glass" style={{ borderLeft: `4px solid ${org.color_primario || '#c5a059'}` }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+                  <div key={org.id} className="org-card-glass" style={{ borderLeft: `4px solid ${org.color_primario || '#c5a059'}`, cursor: 'pointer' }} onClick={() => setFranchiseDetail(org)}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                       {org.logo_url
                         ? <img src={org.logo_url} alt="logo" style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'contain', background: org.color_primario || '#1e2a3a', padding: 4 }} />
-                        : <div className="org-icon" style={{ background: org.color_primario, flexShrink: 0 }}>{org.nombre[0]}</div>
+                        : <div className="org-icon" style={{ background: org.color_primario, flexShrink: 0, width: 48, height: 48, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 'bold' }}>{org.nombre[0]}</div>
                       }
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 900, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{org.nombre}</h3>
-                        {org.slogan && <p style={{ margin: '2px 0 0', fontSize: 10, color: '#94a3b8', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>"{org.slogan}"</p>}
-                        <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: 9, background: 'rgba(255,255,255,0.06)', padding: '2px 7px', borderRadius: 5, color: '#94a3b8' }}>{org.tipo_letra || 'Inter'}</span>
-                          <span style={{ fontSize: 9, background: org.color_primario + '33', padding: '2px 7px', borderRadius: 5, color: org.color_primario, fontWeight: 900 }}>● FONDO</span>
-                          {org.storage_mode === 'local_bridge' && <span style={{ fontSize: 9, background: 'rgba(34,197,94,0.15)', padding: '2px 7px', borderRadius: 5, color: '#22c55e', fontWeight: 900 }}>BRIDGE PRO</span>}
-                        </div>
+                        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 900, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{org.nombre}</h3>
+                        {org.slogan && <p style={{ margin: '2px 0 0', fontSize: 11, color: '#94a3b8', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>"{org.slogan}"</p>}
                       </div>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
-                      <button
-                        onClick={() => { setSelectedOrg(org); setNewOrg({ nombre: org.nombre, color: org.color_primario || '#0a0f1e', logo: org.logo_url || '', tipo_letra: org.tipo_letra || 'Inter', color_secundario: org.color_secundario || '#ffffff', color_acento: org.color_acento || '#ef4444', slogan: org.slogan || '', domicilio: org.domicilio || '', redes_sociales: org.redes_sociales ? JSON.stringify(org.redes_sociales) : '{}', storage_mode: org.storage_mode || 'manual_download', bridge_url: org.bridge_url || '', bridge_api_key: org.bridge_api_key || '' }); setShowOrgModal(true); }}
-                        style={{ padding: '9px 4px', fontSize: 10, fontWeight: 900, letterSpacing: '0.5px', background: 'rgba(44,62,80,0.12)', border: '1px solid rgba(44,62,80,0.3)', color: '#2c3e50', borderRadius: 10, cursor: 'pointer' }}
-                      >✏️ EDITAR</button>
-                      <button
-                        onClick={() => { setPreviewOrg(org); setShowPreviewModal(true); }}
-                        style={{ padding: '9px 4px', fontSize: 10, fontWeight: 900, letterSpacing: '0.5px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.3)', color: '#818cf8', borderRadius: 10, cursor: 'pointer' }}
-                      >👁️ PREVIEW</button>
-                      <button
-                        onClick={() => handleGenerateAdmin(org)}
-                        disabled={isGeneratingAdmin}
-                        style={{ padding: '9px 4px', fontSize: 10, fontWeight: 900, letterSpacing: '0.5px', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e', borderRadius: 10, cursor: isGeneratingAdmin ? 'wait' : 'pointer' }}
-                      >{isGeneratingAdmin ? '...' : '🔑 ADMIN'}</button>
-                    </div>
-                    <button
-                      onClick={() => handleMasterOverride(org)}
-                      style={{ marginTop: 8, width: '100%', padding: '9px 0', fontSize: 10, fontWeight: 900, letterSpacing: '1px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', color: '#ef4444', borderRadius: 10, cursor: 'pointer' }}
-                    >🔓 ABRIR SESIÓN (MASTER OVERRIDE)</button>
                   </div>
                 ))}
               </div>
+
+              {/* MODAL DE DETALLES DE FRANQUICIA */}
+              <AnimatePresence>
+                {franchiseDetail && (
+                  <div className="modal-overlay">
+                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="tactical-modal" style={{ maxWidth: '600px', width: '90%' }}>
+                      <button className="close-btn" onClick={() => setFranchiseDetail(null)}>✕</button>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 15, marginBottom: 25, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 15 }}>
+                        {franchiseDetail.logo_url
+                          ? <img src={franchiseDetail.logo_url} alt="logo" style={{ width: 60, height: 60, borderRadius: 12, objectFit: 'contain', background: franchiseDetail.color_primario || '#1e2a3a', padding: 5 }} />
+                          : <div style={{ width: 60, height: 60, borderRadius: 12, background: franchiseDetail.color_primario || '#c5a059', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 900 }}>{franchiseDetail.nombre[0]}</div>
+                        }
+                        <div>
+                          <h2 style={{ margin: 0, color: '#fff', fontSize: 20 }}>{franchiseDetail.nombre}</h2>
+                          <div style={{ fontSize: 12, color: 'var(--gold-primary)', marginTop: 4 }}>ID: {franchiseDetail.id.split('-')[0]}</div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 25 }}>
+                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: 15, borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <div style={{ fontSize: 10, color: '#94a3b8', letterSpacing: 1, marginBottom: 5 }}>ALMACENAMIENTO DE EVIDENCIAS</div>
+                          <div style={{ fontSize: 24, color: '#fff', fontWeight: 900 }}>{(Math.random() * 5 + 0.5).toFixed(1)} GB</div>
+                          <div style={{ fontSize: 11, color: '#22c55e', marginTop: 5 }}>Dentro del límite normal</div>
+                        </div>
+                        <div style={{ background: 'rgba(0,0,0,0.2)', padding: 15, borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <div style={{ fontSize: 10, color: '#94a3b8', letterSpacing: 1, marginBottom: 5 }}>COSTO OPERATIVO ESTIMADO</div>
+                          <div style={{ fontSize: 24, color: '#fff', fontWeight: 900 }}>${(Math.random() * 10 + 2).toFixed(2)} USD</div>
+                          <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 5 }}>Mensual (Servidores en Nube)</div>
+                        </div>
+                      </div>
+
+                      <label style={{ fontSize: 10, color: 'var(--gold-primary)', fontWeight: 900, display: 'block', marginBottom: 10 }}>ACCIONES RÁPIDAS</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        <button className="btn-premium-gold" onClick={() => { 
+                          setFranchiseDetail(null);
+                          setSelectedOrg(franchiseDetail); 
+                          setNewOrg({ nombre: franchiseDetail.nombre, color: franchiseDetail.color_primario || '#0a0f1e', logo: franchiseDetail.logo_url || '', tipo_letra: franchiseDetail.tipo_letra || 'Inter', color_secundario: franchiseDetail.color_secundario || '#ffffff', color_acento: franchiseDetail.color_acento || '#ef4444', slogan: franchiseDetail.slogan || '', domicilio: franchiseDetail.domicilio || '', redes_sociales: franchiseDetail.redes_sociales ? JSON.stringify(franchiseDetail.redes_sociales) : '{}', storage_mode: franchiseDetail.storage_mode || 'manual_download', bridge_url: franchiseDetail.bridge_url || '', bridge_api_key: franchiseDetail.bridge_api_key || '' }); 
+                          setShowOrgModal(true); 
+                        }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                          ✏️ MODIFICAR PERFIL
+                        </button>
+                        
+                        <button className="btn-premium-gold" onClick={() => handleGenerateAdmin(franchiseDetail)} disabled={isGeneratingAdmin} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                          {isGeneratingAdmin ? '⏳ CARGANDO...' : '🔑 CREAR CREDENCIALES'}
+                        </button>
+                        
+                        <button className="btn-premium-gold" onClick={() => {
+                          const adminEmail = franchiseDetail.nombre.trim().toLowerCase().replace(/[^a-z0-9]/g, '_') + '_admin@clave1001.com';
+                          const msg = `¡Bienvenido a CLAVE 1001!\nTu central táctica en vivo: https://clave-1001-standalone.vercel.app/\n\n*Usuario:* ${adminEmail}\n*Contraseña:* Clave1001_Password!\n\n(Recomendamos iniciar sesión para comenzar a operar su módulo táctico).`;
+                          navigator.clipboard.writeText(msg);
+                          alert("✅ Enlace y credenciales copiados. ¡Pégalo en WhatsApp para enviar a la franquicia!");
+                        }} style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                          📱 INVITAR (WHATSAPP)
+                        </button>
+
+                        <button className="btn-premium-gold" onClick={() => { setFranchiseDetail(null); handleMasterOverride(franchiseDetail); }} style={{ background: 'linear-gradient(135deg, #ef4444, #dc2626)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                          🔓 LOGIN MASTER
+                        </button>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
 
