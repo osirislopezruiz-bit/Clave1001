@@ -82,7 +82,7 @@ export default function FranchiseManager({
             key={org.id} 
             onClick={() => setFranchiseDetail(org)}
             style={{ 
-              borderLeft: \`4px solid \${org.color_primario || '#c5a059'}\`, 
+              borderLeft: `4px solid ${org.color_primario || '#c5a059'}`, 
               background: 'rgba(15, 23, 42, 0.6)',
               borderRadius: '12px',
               padding: '20px',
@@ -119,7 +119,7 @@ export default function FranchiseManager({
               initial={{ opacity: 0, scale: 0.9, y: 20 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              style={{ background: '#0f172a', borderRadius: '20px', padding: '30px', width: '90%', maxWidth: '500px', border: \`1px solid \${franchiseDetail.color_primario || 'var(--gold-primary)'}\`, boxShadow: \`0 10px 40px -10px \${franchiseDetail.color_primario || 'var(--gold-primary)'}40\`, position: 'relative' }}
+              style={{ background: '#0f172a', borderRadius: '20px', padding: '30px', width: '90%', maxWidth: '500px', border: `1px solid ${franchiseDetail.color_primario || 'var(--gold-primary)'}`, boxShadow: `0 10px 40px -10px ${franchiseDetail.color_primario || 'var(--gold-primary)'}40`, position: 'relative' }}
             >
               <button 
                 onClick={() => setFranchiseDetail(null)}
