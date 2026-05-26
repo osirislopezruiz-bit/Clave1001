@@ -946,7 +946,7 @@ Este documento sirve como comprobante legal inmutable de la aceptación de los t
               await supabase.from('logs_auditoria').insert([{
                 usuario_id: authData.user.id,
                 accion: 'aceptacion_terminos_registro',
-                detalles: { ip, hash: hashHex, fecha }
+                detalles: { ip, hash: hashHex, fecha, documento_firmado: content }
               }]);
             } catch (e) {
               console.warn("No se pudo guardar el log de auditoría:", e);
