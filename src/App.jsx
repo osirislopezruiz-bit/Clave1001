@@ -565,44 +565,69 @@ export default function PanicApp() {
 
   useEffect(() => {
     let watchId = null;
-    if (view === 'alert_active' && activeAlert) {
-      if (navigator.geolocation) {
-        console.log("Iniciando watchPosition para rastreo en tiempo real...");
-        watchId = navigator.geolocation.watchPosition(async (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          const alertId = activeAlertRef.current?.id;
-          if (!alertId || String(alertId).startsWith('pending-')) return;
-          console.log(`Nueva ubicación detectada: LAT ${lat}, LNG ${lng}`);
-          
-          const { error } = await supabase
-            .from('alertas_crisis')
-            .update({ latitud: lat, longitud: lng })
-            .eq('id', alertId);
-            
-          if (error) console.error("Error al actualizar ubicación en DB:", error);
+    let fallbackInterval = null;
 
-          // 2. Broadcast de la nueva posición a todos los despachadores activos
-          supabase.channel('war-room-broadcast').send({
-            type: 'broadcast',
-            event: `LOCATION_UPDATE_${alertId}`,
-            payload: { latitud: lat, longitud: lng }
-          });
+    if (view === 'alert_active' && activeAlert) {
+      const sendPositionUpdate = async (lat, lng) => {
+        const alertId = activeAlertRef.current?.id;
+        if (!alertId || String(alertId).startsWith('pending-')) return;
+        
+        console.log(`📡 Ping GPS [Fondo/Activo]: LAT ${lat}, LNG ${lng}`);
+        
+        const { error } = await supabase
+          .from('alertas_crisis')
+          .update({ latitud: lat, longitud: lng })
+          .eq('id', alertId);
+          
+        if (error) console.error("Error al actualizar ubicación en DB:", error);
+
+        supabase.channel('war-room-broadcast').send({
+          type: 'broadcast',
+          event: `LOCATION_UPDATE_${alertId}`,
+          payload: { latitud: lat, longitud: lng }
+        });
+      };
+
+      if (navigator.geolocation) {
+        console.log("Iniciando rastreo GPS (Alta Persistencia)...");
+        
+        // 1. Rastreo nativo (Se pausa cuando se bloquea en iOS/Android)
+        watchId = navigator.geolocation.watchPosition((position) => {
+          sendPositionUpdate(position.coords.latitude, position.coords.longitude);
         }, (err) => {
-          console.error("Error obteniendo watchPosition:", err);
+          console.warn("⚠️ GPS watchPosition error:", err);
         }, {
           enableHighAccuracy: true,
           maximumAge: 0,
           timeout: 5000
         });
+
+        // 2. Fallback Timer: Intenta forzar lectura si está en background o el watch se congeló
+        fallbackInterval = setInterval(() => {
+          navigator.geolocation.getCurrentPosition((position) => {
+            sendPositionUpdate(position.coords.latitude, position.coords.longitude);
+          }, () => {}, { enableHighAccuracy: true, maximumAge: 10000 });
+        }, 8000);
+
+        // 3. Recuperación Inmediata al despertar la pantalla
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === 'visible') {
+            console.log("🔓 Pantalla encendida: Forzando actualización GPS de Inmediato");
+            navigator.geolocation.getCurrentPosition((position) => {
+              sendPositionUpdate(position.coords.latitude, position.coords.longitude);
+            }, () => {}, { enableHighAccuracy: true });
+          }
+        };
+        
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+        return () => {
+          if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+          if (fallbackInterval) clearInterval(fallbackInterval);
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
       }
     }
-
-    return () => {
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-      }
-    };
   }, [view, activeAlert]);
 
   useEffect(() => {
