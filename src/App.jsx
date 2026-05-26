@@ -922,11 +922,36 @@ Este documento sirve como comprobante legal inmutable de la aceptación de los t
             'organizacion_id': b2bOrg ? b2bOrg.id : null,
             'organización_id': b2bOrg ? b2bOrg.id : null,
             contactos_referencia: [c1, c2, c3].filter(Boolean),
-            clave_seguridad: safetyCode
+            clave_seguridad: safetyCode,
+            acuerdos_aceptados: true
           }]);
           if (profileError) {
             alert("Error al crear perfil: " + profileError.message);
           } else {
+            // Guardar log de términos
+            try {
+              let ip = 'Desconocida';
+              try {
+                const resIp = await fetch('https://api.ipify.org?format=json');
+                const dataIp = await resIp.json();
+                ip = dataIp.ip;
+              } catch (e) {}
+              const fecha = new Date().toISOString();
+              const content = `ACUERDO LEGAL (REGISTRO B2B/PWA)\nUsuario: ${fullName} (${email})\nFecha: ${fecha}\nIP: ${ip}\nAceptó Términos, Privacidad y ARCO.`;
+              const encoder = new TextEncoder();
+              const dataBuffer = encoder.encode(content);
+              const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+              const hashArray = Array.from(new Uint8Array(hashBuffer));
+              const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+              await supabase.from('logs_auditoria').insert([{
+                usuario_id: authData.user.id,
+                accion: 'aceptacion_terminos_registro',
+                detalles: { ip, hash: hashHex, fecha }
+              }]);
+            } catch (e) {
+              console.warn("No se pudo guardar el log de auditoría:", e);
+            }
+
             if (authData.session) {
               await handleSession(authData.session);
             } else {
@@ -1063,6 +1088,23 @@ Este documento sirve como comprobante legal inmutable de la aceptación de los t
               <p style={{ fontSize: 8, color: 'var(--accent-gold)', marginTop: 4 }}>* Se usará para desactivar alertas</p>
             </div>
           )}
+
+          {isRegister && (
+            <div className="terms-section" style={{ marginTop: '15px', marginBottom: '15px', padding: '12px', background: 'rgba(0,0,0,0.4)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '10px' }}>
+                <input type="checkbox" required checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} style={{ width: '16px', height: '16px', marginTop: '1px', accentColor: 'var(--accent-gold)' }} />
+                <span style={{ color: '#cbd5e1', fontSize: '10px', lineHeight: '1.4' }}>Acepto los Términos de Uso y las políticas de la plataforma.</span>
+              </label>
+              <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '10px' }}>
+                <input type="checkbox" required checked={acceptedPriv} onChange={e => setAcceptedPriv(e.target.checked)} style={{ width: '16px', height: '16px', marginTop: '1px', accentColor: 'var(--accent-gold)' }} />
+                <span style={{ color: '#cbd5e1', fontSize: '10px', lineHeight: '1.4' }}>Acepto el Aviso de Privacidad y el uso de mis datos (GPS y multimedia) en emergencias.</span>
+              </label>
+              <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer' }}>
+                <input type="checkbox" required checked={acceptedArco} onChange={e => setAcceptedArco(e.target.checked)} style={{ width: '16px', height: '16px', marginTop: '1px', accentColor: 'var(--accent-gold)' }} />
+                <span style={{ color: '#cbd5e1', fontSize: '10px', lineHeight: '1.4' }}>Reconozco mis Derechos ARCO sobre el manejo de mi información.</span>
+              </label>
+            </div>
+          )}
           
           <button type="submit" className="login-btn-premium" disabled={status === 'loading'}>
             {status === 'loading' ? (
@@ -1135,7 +1177,8 @@ Este documento sirve como comprobante legal inmutable de la aceptación de los t
           border: 1px solid var(--border-color);
           box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255,255,255,0.04);
           position: relative;
-          overflow: hidden;
+          overflow-y: auto;
+          max-height: 90vh;
         }
 
         .login-card-premium::before {
@@ -1589,7 +1632,7 @@ Este documento sirve como comprobante legal inmutable de la aceptación de los t
     const orgName = userProfile?.organization?.nombre || 'Arché Holding Labs / Clave 1001';
     return (
       <div className="login-container">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="login-box" style={{ maxWidth: '600px', padding: '40px' }}>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="login-box" style={{ maxWidth: '600px', padding: '40px', maxHeight: '90vh', overflowY: 'auto', background: 'var(--card-dark)', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
           <h1 style={{ fontSize: '24px', marginBottom: '10px' }}>ACEPTACIÓN <span>LEGAL</span></h1>
           <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '30px', lineHeight: '1.6' }}>
             Para garantizar la seguridad de todos los usuarios y cumplir con las normativas internacionales de protección de datos, es estrictamente necesario que aceptes los términos de uso y aviso de privacidad de <strong>{orgName}</strong>.
