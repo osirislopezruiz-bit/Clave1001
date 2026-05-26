@@ -1373,8 +1373,6 @@ export default function WarRoom({ userProfile }) {
               setSelectedOrg={setSelectedOrg}
               setNewOrg={setNewOrg}
               setShowOrgModal={setShowOrgModal}
-              franchiseDetail={franchiseDetail}
-              setFranchiseDetail={setFranchiseDetail}
               handleGenerateAdmin={handleGenerateAdmin}
               isGeneratingAdmin={isGeneratingAdmin}
               handleMasterOverride={handleMasterOverride}
