@@ -1908,7 +1908,11 @@ Este documento sirve como comprobante legal inmutable de la aceptación de los t
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="panic-view"
           >
-            <div className="brand-header">
+            <motion.div 
+              className="brand-header"
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                    <img src="/logo.png" alt="Logo" style={{ width: 48, height: 48, objectFit: 'contain' }} />
@@ -1924,33 +1928,53 @@ Este documento sirve como comprobante legal inmutable de la aceptación de los t
                   <LogOut size={16} /> SALIR
                 </button>
               </div>
-              <div className="main-brand-display" style={{ marginTop: 30 }}>
-                <img src={userProfile?.organization?.logo_url || "/logo.png"} alt="Logo" className="active-response-logo" style={{ width: 130, height: 130 }} />
-                <h1 style={{ fontSize: 30 }}>{userProfile?.organization?.nombre || b2bOrg?.nombre || 'CLAVE 1001'}</h1>
+              <div className="main-brand-display" style={{ marginTop: 30, position: 'relative' }}>
+                <motion.div
+                   animate={{ y: [0, -10, 0], rotateZ: [-1, 1, -1] }}
+                   transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+                >
+                  <img src={userProfile?.organization?.logo_url || "/logo.png"} alt="Logo" className="active-response-logo" style={{ width: 130, height: 130, filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }} />
+                </motion.div>
+                <h1 style={{ fontSize: 30, textShadow: '0 10px 30px rgba(0,0,0,0.8)' }}>{userProfile?.organization?.nombre || b2bOrg?.nombre || 'CLAVE 1001'}</h1>
                 <p style={{ fontSize: 12 }}>{userProfile?.organization ? 'PROTECCIÓN CORPORATIVA ACTIVA' : 'SISTEMA DE RESPUESTA INMEDIATA'}</p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="panic-button-wrapper" style={{ height: '45vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <motion.button 
-                whileTap={{ scale: 0.85 }}
-                className="panic-btn"
-                onClick={handlePanic}
-                style={{ 
-                  width: 240, 
-                  height: 240, 
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #ef4444 0%, #991b1b 100%)',
-                  boxShadow: '0 0 50px rgba(239, 68, 68, 0.4), inset 0 4px 10px rgba(255, 255, 255, 0.3)',
-                  border: '8px solid rgba(255, 255, 255, 0.08)'
-                }}
+            <div className="panic-button-wrapper" style={{ height: '45vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              {/* Efecto de partículas/fondo gravitacional */}
+              <motion.div 
+                animate={{ rotate: 360, scale: [1, 1.1, 1] }} 
+                transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                style={{ position: 'absolute', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 70%)', borderRadius: '50%', zIndex: 0 }} 
+              />
+              <motion.div 
+                animate={{ y: [0, -20, 0] }} 
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                style={{ zIndex: 2 }}
               >
-                <div className="pulse-ring" style={{ width: 240, height: 240 }} />
-                <div className="btn-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <AlertTriangle size={60} color="white" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} />
-                  <span style={{ fontSize: 26, fontWeight: 900, marginTop: 14, letterSpacing: 5, textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>AUXILIO</span>
-                </div>
-              </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.05, boxShadow: '0 0 80px rgba(239, 68, 68, 0.6), inset 0 4px 20px rgba(255, 255, 255, 0.5)' }}
+                  whileTap={{ scale: 0.85 }}
+                  className="panic-btn"
+                  onClick={handlePanic}
+                  style={{ 
+                    width: 240, 
+                    height: 240, 
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%)',
+                    boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 50px rgba(239, 68, 68, 0.4), inset 0 4px 15px rgba(255, 255, 255, 0.4)',
+                    border: '8px solid rgba(255, 255, 255, 0.1)',
+                    position: 'relative'
+                  }}
+                >
+                  <div className="pulse-ring" style={{ width: 240, height: 240 }} />
+                  <div className="pulse-ring" style={{ width: 240, height: 240, animationDelay: '1s' }} />
+                  <div className="btn-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <AlertTriangle size={65} color="white" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.6))' }} />
+                    <span style={{ fontSize: 28, fontWeight: 900, marginTop: 14, letterSpacing: 6, textShadow: '0 4px 8px rgba(0,0,0,0.6)' }}>AUXILIO</span>
+                  </div>
+                </motion.button>
+              </motion.div>
             </div>
 
             <footer className="powered-footer">
