@@ -133,6 +133,64 @@ app.post('/api/v1/acuerdos_legales', authBridge, (req, res) => {
   }
 });
 
+// ----------- NUEVO ENDPOINT: Registro simplificado con INE -----------
+app.post('/api/v1/validate_user', authBridge, upload.fields([{ name: 'ine_file', maxCount: 1 }, { name: 'ine_responsable_file', maxCount: 1 }]), async (req, res) => {
+  try {
+    const { email, es_menor } = req.body;
+    const ineFile = req.files['ine_file'] ? req.files['ine_file'][0] : null;
+    const responsableFile = req.files['ine_responsable_file'] ? req.files['ine_responsable_file'][0] : null;
+
+    if (!email || !ineFile) {
+      return res.status(400).json({ error: 'Faltan email o archivo INE del usuario' });
+    }
+    if (es_menor === 'true' && !responsableFile) {
+      return res.status(400).json({ error: 'Menor requiere INE del responsable' });
+    }
+
+    // Guardar INE del usuario
+    const savedIne = saveEvidenceFile({
+      storagePath: config.storagePath,
+      organizacionId: config.organizacionId || 'local',
+      alertId: 'registro-ine',
+      tempPath: ineFile.path,
+      originalName: ineFile.originalname,
+    });
+
+    let savedResp = null;
+    if (responsableFile) {
+      savedResp = saveEvidenceFile({
+        storagePath: config.storagePath,
+        organizacionId: config.organizacionId || 'local',
+        alertId: 'registro-ine-resp',
+        tempPath: responsableFile.path,
+        originalName: responsableFile.originalname,
+      });
+    }
+
+    // Upsert en Supabase
+    const upsertData = {
+      email,
+      ine_path: savedIne.ruta_local,
+      ine_hash: savedIne.hash,
+      es_menor: es_menor === 'true',
+    };
+    if (savedResp) {
+      upsertData.ine_responsable_path = savedResp.ruta_local;
+      upsertData.ine_responsable_hash = savedResp.hash;
+    }
+    const { error } = await supabase.from('usuarios_clave').upsert(upsertData, { onConflict: ['email'] });
+    if (error) {
+      console.error('[Bridge] Error upsert registro:', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ ok: true, email, es_menor: es_menor === 'true' });
+  } catch (err) {
+    console.error('[Bridge] Error registro usuario:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const server = app.listen(config.port, config.host, () => {
   console.log('\n══════════════════════════════════════════');
   console.log('  CLAVE 1001 BRIDGE — Fase 2');

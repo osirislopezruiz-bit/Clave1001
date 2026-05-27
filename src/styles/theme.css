@@ -1,0 +1,34 @@
+/* src/styles/theme.css */
+:root {
+  --bg-primary: #0b0c26; /* deep midnight blue */
+  --bg-secondary: #151637;
+  --text-primary: #e0e0ff;
+  --accent-primary: #3b82f6; /* bright accent for highlights */
+  --card-bg: rgba(255, 255, 255, 0.08);
+  --shadow-soft: 0 4px 12px rgba(0,0,0,0.5);
+  --font-family: 'Inter', sans-serif;
+  --transition-speed: 0.3s;
+}
+
+html.dark-mode {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+}
+
+/* Apply to common containers */
+html.dark-mode body, html.dark-mode #root {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+html.dark-mode .card {
+  background: var(--card-bg);
+  box-shadow: var(--shadow-soft);
+  border-radius: 12px;
+}
+
+/* Smooth transition for theme change */
+html.dark-mode *, html.dark-mode *::before, html.dark-mode *::after {
+  transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+}

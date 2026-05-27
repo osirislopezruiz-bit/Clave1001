@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './styles/adminPanel.css';
 import { Shield, AlertTriangle, MapPin, Clock, CheckCircle, Phone, Navigation, LogOut, Users, Activity, Radio, Database, Lock, Plus, Monitor, Camera, BellRing, Mic, Eye, Zap, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Marker, Popup, useMap, Polyline } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import FranchiseManager from './components/admin/FranchiseManager';
+import SlidingCard from './components/SlidingCard';
 import OrgModal from './components/OrgModal';
 import { supabase } from './lib/supabase';
 import {
@@ -100,6 +102,8 @@ export default function WarRoom({ userProfile }) {
   const maxRecordTimerRef = useRef(null);
   const autoRecordAlertIdRef = useRef(null);
   const recordingSecondsRef = useRef(0);
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // NUEVAS VARIABLES DE ESTADO PARA LAS CARACTERÍSTICAS MEJORADAS
   const [alertFilter, setAlertFilter] = useState('activas'); 
@@ -854,53 +858,111 @@ export default function WarRoom({ userProfile }) {
 
   return (
     <div className="war-room-container">
-      {/* SIDEBAR GLASSMORPHISM */}
-      {view !== 'alerts' && (
-      <aside className="tactical-sidebar">
-        <div className="sidebar-brand">
-          <div className="brand-glow" />
-          <img src="/logo.png" alt="Logo" className="brand-logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
-          <div className="brand-text">
-            <span className="brand-name">CLAVE 1001</span>
-            <span className="brand-tag">COMMAND CENTER</span>
-          </div>
-        </div>
+      <SlidingCard isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} title="NAVEGACIÓN TÁCTICA">
+          {view !== 'alerts' ? (
+            <aside className="tactical-sidebar" style={{ position: 'relative', width: '100%', border: 'none', background: 'transparent' }}>
+              <div className="sidebar-brand">
+                <div className="brand-glow" />
+                <img src="/logo.png" alt="Logo" className="brand-logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+                <div className="brand-text">
+                  <span className="brand-name">CLAVE 1001</span>
+                  <span className="brand-tag">COMMAND CENTER</span>
+                </div>
+              </div>
 
-        <nav className="tactical-nav">
-          <button className={view === 'dashboard' ? 'active' : ''} onClick={() => setView('dashboard')}>
-            <Zap size={18} /> OPERACIONES
-          </button>
-          <button className={view === 'alerts' ? 'active' : ''} onClick={() => setView('alerts')}>
-            <Activity size={18} /> WAR ROOM {stats.active > 0 && <span className="active-badge">{stats.active}</span>}
-          </button>
-          {(!userProfile || ['admin', 'operador'].includes(userProfile.rol)) && (
-            <>
-              <button className={view === 'orgs' ? 'active' : ''} onClick={() => setView('orgs')}>
-                <Users size={18} /> FRANQUICIAS
-              </button>
-              <button className={view === 'iot' ? 'active' : ''} onClick={() => setView('iot')}>
-                <Video size={18} /> CÁMARAS Y CCTV
-              </button>
-            </>
+              <nav className="tactical-nav">
+                <button className={view === 'dashboard' ? 'active' : ''} onClick={() => { setView('dashboard'); setIsMenuOpen(false); }}>
+                  <Zap size={18} /> OPERACIONES
+                </button>
+                <button className={view === 'alerts' ? 'active' : ''} onClick={() => { setView('alerts'); setIsMenuOpen(false); }}>
+                  <Activity size={18} /> WAR ROOM {stats.active > 0 && <span className="active-badge">{stats.active}</span>}
+                </button>
+                {(!userProfile || ['admin', 'operador'].includes(userProfile.rol)) && (
+                  <>
+                    <button className={view === 'orgs' ? 'active' : ''} onClick={() => { setView('orgs'); setIsMenuOpen(false); }}>
+                      <Users size={18} /> FRANQUICIAS
+                    </button>
+                    <button className={view === 'iot' ? 'active' : ''} onClick={() => { setView('iot'); setIsMenuOpen(false); }}>
+                      <Video size={18} /> CÁMARAS Y CCTV
+                    </button>
+                  </>
+                )}
+                {userProfile && ['admin', 'operador', 'franquicia_admin', 'franquicia_gerente'].includes(userProfile.rol) && (
+                  <button className={view === 'staff' ? 'active' : ''} onClick={() => { setView('staff'); setIsMenuOpen(false); }}>
+                    <Shield size={18} /> PERSONAL
+                  </button>
+                )}
+                <button className={view === 'evidences' ? 'active' : ''} onClick={() => { setView('evidences'); setIsMenuOpen(false); }}>
+                  <Database size={18} /> EVIDENCIAS
+                </button>
+              </nav>
+
+              <div className="sidebar-footer">
+                <div className="sys-status"><div className="dot-green" /> SYSTEM SECURE</div>
+                <button onClick={() => supabase.auth.signOut()} className="btn-logout"><LogOut size={16} /> LOGOUT</button>
+              </div>
+            </aside>
+          ) : (
+            <div className="incident-panel" style={{ width: '100%', height: '100%', background: 'transparent', border: 'none' }}>
+              <div className="panel-head" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'stretch' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3>CENTRAL DE ALARMAS</h3>
+                  <div className={alertFilter === 'activas' ? 'pulse-red' : 'pulse-green'} />
+                  <button onClick={() => setView('dashboard')} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.2)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', cursor: 'pointer' }}>VOLVER</button>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '5px', background: 'rgba(0,0,0,0.4)', padding: '3px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <button 
+                    onClick={() => { setAlertFilter('activas'); setSelectedAlert(alerts.filter(a => a.estado === 'activa')[0] || null); }}
+                    style={{ flex: 1, background: alertFilter === 'activas' ? 'rgba(239, 68, 68, 0.2)' : 'transparent', border: alertFilter === 'activas' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid transparent', color: alertFilter === 'activas' ? '#ef4444' : '#64748b', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: '900', cursor: 'pointer' }}
+                  >
+                    🔴 ACTIVAS ({alerts.filter(a => a.estado === 'activa').length})
+                  </button>
+                  <button 
+                    onClick={() => { setAlertFilter('resueltas'); setSelectedAlert(alerts.filter(a => a.estado === 'resuelta')[0] || null); }}
+                    style={{ flex: 1, background: alertFilter === 'resueltas' ? 'rgba(16, 185, 129, 0.2)' : 'transparent', border: alertFilter === 'resueltas' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid transparent', color: alertFilter === 'resueltas' ? '#10b981' : '#64748b', padding: '6px', borderRadius: '6px', fontSize: '9px', fontWeight: '900', cursor: 'pointer' }}
+                  >
+                    ✅ HISTÓRICAS ({alerts.filter(a => a.estado === 'resuelta').length})
+                  </button>
+                </div>
+              </div>
+              
+              <div className="tactical-search" style={{ padding: '0 0 15px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <input
+                  type="text"
+                  placeholder="BUSCAR VÍCTIMA / FRANQUICIA..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', padding: '10px 15px', borderRadius: '12px', color: '#fff', fontSize: '11px', outline: 'none' }}
+                />
+              </div>
+              <div className="incident-scroll" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+                {alerts
+                  .filter(a => alertFilter === 'activas' ? a.estado === 'activa' : a.estado === 'resuelta')
+                  .filter(a => {
+                    if (!searchTerm) return true;
+                    const term = searchTerm.toLowerCase();
+                    return (
+                      a.usuario?.nombre_completo?.toLowerCase().includes(term) ||
+                      a.usuario?.organizacion?.nombre?.toLowerCase().includes(term) ||
+                      a.usuario?.telefono?.includes(term)
+                    );
+                  })
+                  .map(alert => (
+                  <div key={alert.id} className={`incident-item ${selectedAlert?.id === alert.id ? 'active' : ''}`} onClick={() => { setSelectedAlert(alert); setIsMenuOpen(false); }}>
+                    <div className="item-accent" style={{ background: alert.usuario?.organizacion?.color_primario || '#ef4444' }} />
+                    <div className="item-data">
+                      <div className="u-name">{alert.usuario?.nombre_completo}</div>
+                      <div className="u-meta">{alert.usuario?.organizacion?.nombre || 'CLAVE 1001'} | {new Date(alert.fecha_inicio).toLocaleTimeString()}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
-          {userProfile && ['admin', 'operador', 'franquicia_admin', 'franquicia_gerente'].includes(userProfile.rol) && (
-            <button className={view === 'staff' ? 'active' : ''} onClick={() => setView('staff')}>
-              <Shield size={18} /> PERSONAL
-            </button>
-          )}
-          <button className={view === 'evidences' ? 'active' : ''} onClick={() => setView('evidences')}>
-            <Database size={18} /> EVIDENCIAS
-          </button>
-        </nav>
+      </SlidingCard>
 
-        <div className="sidebar-footer">
-          <div className="sys-status"><div className="dot-green" /> SYSTEM SECURE</div>
-          <button onClick={() => supabase.auth.signOut()} className="btn-logout"><LogOut size={16} /> LOGOUT</button>
-        </div>
-      </aside>
-      )}
-
-      <main className={`tactical-main ${view === 'alerts' ? 'in-war-room' : ''}`} style={{ width: view === 'alerts' ? '100vw' : '100%', minWidth: 0 }}>
+      <main className={`tactical-main ${view === 'alerts' ? 'in-war-room' : ''}`} style={{ width: '100vw', minWidth: 0 }}>
         <AnimatePresence mode="wait">
           {view === 'dashboard' && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="view-content">
@@ -1004,100 +1066,7 @@ export default function WarRoom({ userProfile }) {
                 </div>
               </div>
 
-              <div className="immersive-layout">
-                <div className="incident-panel">
-                  <div className="panel-head" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'stretch' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <h3>CENTRAL DE ALARMAS</h3>
-                      <div className={alertFilter === 'activas' ? 'pulse-red' : 'pulse-green'} />
-                    </div>
-                    
-                    {/* Botones de alternancia de estado (Activa / Historial) */}
-                    <div style={{ display: 'flex', gap: '5px', background: 'rgba(0,0,0,0.4)', padding: '3px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <button 
-                        onClick={() => { setAlertFilter('activas'); setSelectedAlert(alerts.filter(a => a.estado === 'activa')[0] || null); }}
-                        style={{
-                          flex: 1,
-                          background: alertFilter === 'activas' ? 'rgba(239, 68, 68, 0.2)' : 'transparent',
-                          border: alertFilter === 'activas' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid transparent',
-                          color: alertFilter === 'activas' ? '#ef4444' : '#64748b',
-                          padding: '6px',
-                          borderRadius: '6px',
-                          fontSize: '9px',
-                          fontWeight: '900',
-                          cursor: 'pointer',
-                          letterSpacing: '1px',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        🔴 ACTIVAS ({alerts.filter(a => a.estado === 'activa').length})
-                      </button>
-                      <button 
-                        onClick={() => { setAlertFilter('resueltas'); setSelectedAlert(alerts.filter(a => a.estado === 'resuelta')[0] || null); }}
-                        style={{
-                          flex: 1,
-                          background: alertFilter === 'resueltas' ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
-                          border: alertFilter === 'resueltas' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid transparent',
-                          color: alertFilter === 'resueltas' ? '#10b981' : '#64748b',
-                          padding: '6px',
-                          borderRadius: '6px',
-                          fontSize: '9px',
-                          fontWeight: '900',
-                          cursor: 'pointer',
-                          letterSpacing: '1px',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        ✅ HISTÓRICAS ({alerts.filter(a => a.estado === 'resuelta').length})
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="tactical-search" style={{ padding: '0 20px 15px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    <input
-                      type="text"
-                      placeholder="BUSCAR VÍCTIMA / FRANQUICIA..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      style={{
-                        width: '100%',
-                        background: 'rgba(0,0,0,0.3)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        padding: '10px 15px',
-                        borderRadius: '12px',
-                        color: '#fff',
-                        fontSize: '11px',
-                        letterSpacing: '1px',
-                        outline: 'none',
-                        transition: 'all 0.3s'
-                      }}
-                    />
-                  </div>
-                  <div className="incident-scroll">
-                    {alerts
-                      .filter(a => alertFilter === 'activas' ? a.estado === 'activa' : a.estado === 'resuelta')
-                      .filter(a => {
-                        if (!searchTerm) return true;
-                        const term = searchTerm.toLowerCase();
-                        return (
-                          a.usuario?.nombre_completo?.toLowerCase().includes(term) ||
-                          a.usuario?.organizacion?.nombre?.toLowerCase().includes(term) ||
-                          a.usuario?.telefono?.includes(term)
-                        );
-                      })
-                      .map(alert => (
-                      <div key={alert.id} className={`incident-item ${selectedAlert?.id === alert.id ? 'active' : ''}`} onClick={() => setSelectedAlert(alert)}>
-                        <div className="item-accent" style={{ background: alert.usuario?.organizacion?.color_primario || '#ef4444' }} />
-                        <div className="item-data">
-                          <div className="u-name">{alert.usuario?.nombre_completo}</div>
-                          <div className="u-meta">{alert.usuario?.organizacion?.nombre || 'CLAVE 1001'} | {new Date(alert.fecha_inicio).toLocaleTimeString()}</div>
-                        </div>
-                      </div>
-                    ))}
-                    {alertFilter === 'activas' && alerts.filter(a => a.estado === 'activa').length === 0 && <div className="empty-msg">SIN ALERTAS ACTIVAS</div>}
-                    {alertFilter === 'resueltas' && alerts.filter(a => a.estado === 'resuelta').length === 0 && <div className="empty-msg">SIN HISTORIAL DE ALERTAS</div>}
-                  </div>
-                </div>
+              <div className="immersive-layout" style={{ display: 'block', width: '100%', height: '100%' }}>
 
                 <div className="monitor-stage">
                   {!selectedAlert ? (
@@ -1130,21 +1099,41 @@ export default function WarRoom({ userProfile }) {
                              {locationHistory.map((coords, idx) => {
                                const isStart = idx === 0;
                                const isLatest = idx === locationHistory.length - 1;
+                               
+                               if (isLatest) {
+                                 const iconClass = selectedAlert.estado === 'resuelta' ? 'radar-marker resolved' : 'radar-marker';
+                                 const customIcon = L.divIcon({
+                                   className: '',
+                                   html: `<div class="${iconClass}"></div>`,
+                                   iconSize: [24, 24],
+                                   iconAnchor: [12, 12]
+                                 });
+                                 return (
+                                   <Marker key={idx} position={coords} icon={customIcon}>
+                                     <Popup>
+                                       <div style={{ color: '#000', fontSize: '10px', fontFamily: 'monospace', padding: '3px' }}>
+                                         {selectedAlert.estado === 'resuelta' ? '✅ PUNTO DE DESACTIVACIÓN' : '📍 UBICACIÓN EN TIEMPO REAL'}
+                                       </div>
+                                     </Popup>
+                                   </Marker>
+                                 );
+                               }
+
                                return (
                                  <CircleMarker
                                    key={idx}
                                    center={coords}
-                                   radius={isLatest ? 16 : isStart ? 12 : 6}
+                                   radius={isStart ? 12 : 6}
                                    pathOptions={{
-                                     color: isLatest ? (selectedAlert.estado === 'resuelta' ? '#10b981' : '#ef4444') : isStart ? '#c5a059' : '#3b82f6',
-                                     fillColor: isLatest ? (selectedAlert.estado === 'resuelta' ? '#10b981' : '#ef4444') : isStart ? '#c5a059' : '#3b82f6',
-                                     fillOpacity: isLatest ? 0.35 : 0.75,
-                                     weight: isLatest ? 3 : 1
+                                     color: isStart ? '#c5a059' : '#3b82f6',
+                                     fillColor: isStart ? '#c5a059' : '#3b82f6',
+                                     fillOpacity: 0.75,
+                                     weight: 1
                                    }}
                                  >
                                    <Popup>
                                      <div style={{ color: '#000', fontSize: '10px', fontFamily: 'monospace', padding: '3px' }}>
-                                       {isStart ? '🚨 PUNTO DE ACTIVACIÓN (SOS)' : isLatest ? (selectedAlert.estado === 'resuelta' ? '✅ PUNTO DE DESACTIVACIÓN / AUXILIO EXITOSO' : '📍 UBICACIÓN EN TIEMPO REAL') : `⏱️ PASO RUTA ${idx + 1}`}
+                                       {isStart ? '🚨 PUNTO DE ACTIVACIÓN (SOS)' : `⏱️ PASO RUTA ${idx + 1}`}
                                      </div>
                                    </Popup>
                                  </CircleMarker>
