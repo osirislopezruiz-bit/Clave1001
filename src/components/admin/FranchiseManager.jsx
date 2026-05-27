@@ -95,7 +95,7 @@ export default function FranchiseManager({
       </div>
 
       {/* GRID DE ALTO IMPACTO TÁCTICO */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '25px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))', gap: '20px' }}>
         {orgs.map((org, index) => {
           const isHovered = hoveredOrg === org.id;
           const orgColor = org.color_primario || 'var(--gold-primary)';
@@ -138,29 +138,28 @@ export default function FranchiseManager({
                 <span style={{ fontSize: '9px', color: '#10b981', fontWeight: '900', letterSpacing: '1px' }}>ACTIVA</span>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '18px', position: 'relative', zIndex: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', position: 'relative', zIndex: 2 }}>
                 {org.logo_url ? (
-                  <div style={{ width: '60px', height: '60px', borderRadius: '16px', background: '#0a0f1e', padding: '8px', flexShrink: 0, border: `1px solid ${orgColor}40`, boxShadow: `0 0 15px ${orgColor}20` }}>
+                  <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: '#0a0f1e', padding: '8px', flexShrink: 0, border: `1px solid ${orgColor}40`, boxShadow: `0 0 15px ${orgColor}20` }}>
                     <img src={org.logo_url} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </div>
                 ) : (
-                  <div style={{ width: '60px', height: '60px', borderRadius: '16px', background: `linear-gradient(135deg, ${orgColor}, #0a0f1e)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: '900', color: '#fff', flexShrink: 0, border: `1px solid ${orgColor}50`, boxShadow: `0 0 15px ${orgColor}40` }}>
+                  <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: `linear-gradient(135deg, ${orgColor}, #0a0f1e)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', fontWeight: '900', color: '#fff', flexShrink: 0, border: `1px solid ${orgColor}50`, boxShadow: `0 0 15px ${orgColor}40` }}>
                     {org.nombre[0]?.toUpperCase()}
                   </div>
                 )}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '0.5px' }}>{org.nombre}</h3>
-                  <div style={{ fontSize: '11px', color: '#64748b', marginTop: '6px', fontFamily: 'monospace', letterSpacing: '1px' }}>
-                    NODO ID: {org.id.split('-')[0].toUpperCase()}
+                  <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '0.3px', paddingRight: '60px' }}>{org.nombre}</h3>
+                  {org.slogan && <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#94a3b8', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '60px' }}>"{org.slogan}"</p>}
+                  <div style={{ fontSize: '10px', color: '#475569', marginTop: '8px', fontFamily: 'monospace', letterSpacing: '0.5px' }}>
+                    ID: {org.id.split('-')[0].toUpperCase()}
                   </div>
-                  
-                  {/* Micro-stats falsas para diseño táctico */}
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
                     <div style={{ fontSize: '10px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Activity size={10} color={orgColor} /> Sistema OK
+                      <Activity size={10} color={orgColor} /> Activa
                     </div>
                     <div style={{ fontSize: '10px', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Zap size={10} color={orgColor} /> Enlazado
+                      <Zap size={10} color={orgColor} /> Online
                     </div>
                   </div>
                 </div>
